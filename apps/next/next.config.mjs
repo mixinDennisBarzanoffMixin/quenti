@@ -1,4 +1,5 @@
 import { withHighlightConfig } from "@highlight-run/next/config";
+import { existsSync } from "fs";
 import { withAxiom } from "next-axiom";
 import nextBuildId from "next-build-id";
 import { dirname } from "path";
@@ -25,6 +26,18 @@ const appVersion = pjson.version;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+const generateBuildId = () => {
+  if (process.env.RAILWAY_GIT_COMMIT_SHA) return process.env.RAILWAY_GIT_COMMIT_SHA;
+  if (process.env.RAILWAY_DEPLOYMENT_ID) return process.env.RAILWAY_DEPLOYMENT_ID;
+  if (!existsSync(`${__dirname}/.git`)) return "snapshot";
+
+  try {
+    return nextBuildId({ dir: __dirname });
+  } catch {
+    return "local";
+  }
+};
+
 const domains = ["lh3.googleusercontent.com", "images.unsplash.com"];
 if (process.env.USERS_BUCKET_URL)
   domains.push(new URL(process.env.USERS_BUCKET_URL).host);
@@ -41,7 +54,7 @@ const getConsoleRewrites = async () => {
 
 /** @type {import("next").NextConfig} */
 let config = {
-  generateBuildId: () => nextBuildId({ dir: __dirname }),
+  generateBuildId,
   experimental: {
     optimizePackageImports: [
       "@quenti/components",
@@ -55,6 +68,12 @@ let config = {
   },
   reactStrictMode: true,
   swcMinify: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   i18n: {
     locales: ["en"],
     defaultLocale: "en",

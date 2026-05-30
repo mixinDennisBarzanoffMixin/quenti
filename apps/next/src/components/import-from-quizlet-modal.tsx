@@ -258,7 +258,7 @@ export const ImportFromQuizletModal: React.FC<ImportFromQuizletModalProps> = ({
                     Cancel
                   </Button>
                   <Button
-                    isLoading={fromUrl.isLoading}
+                    isLoading={isLoading}
                     isDisabled={!url || invalid}
                     onClick={async () => {
                       setError("");

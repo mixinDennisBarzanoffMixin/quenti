@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "bun prisma generate && PRISMA_CLIENT_DIR=$(dirname \"$(find node_modules -path '*/.prisma/client/index.js' | head -n 1)\") && mkdir -p node_modules/.prisma && cp -R \"$PRISMA_CLIENT_DIR\" node_modules/.prisma/client && bun run build"
+  },
+  "deploy": {
+    "startCommand": "bun prisma db:push && bun run --cwd apps/next start -p ${PORT:-3000}",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}

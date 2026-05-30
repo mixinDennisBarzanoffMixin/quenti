@@ -195,7 +195,6 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 
                             await signIn("google", {
                               callbackUrl: safeCallbackUrl,
-                              redirect: false,
                             });
                           }}
                         >
